@@ -624,7 +624,7 @@ function getFileIcon(filename) {
 
 
     if (extension === "md") {
-        return "";
+        return "📄";
     }
 
 
@@ -654,11 +654,11 @@ function getFileIcon(filename) {
             "gz"
         ].includes(extension)
     ) {
-        return "";
+        return "📦";
     }
 
 
-    return "";
+    return "📄";
 }
 
 
