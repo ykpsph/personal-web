@@ -5,27 +5,29 @@ let currentPath = "";
 
 const fileList = document.getElementById("fileList");
 const breadcrumb = document.getElementById("breadcrumb");
-const uploadButton = document.getElementById("uploadButton");
-const fileInput = document.getElementById("fileInput");
+
+const uploadButton =
+    document.getElementById("uploadButton");
+
+const fileInput =
+    document.getElementById("fileInput");
 
 
-// ============================================
+// ========================================
 // LOAD DIRECTORY
-// ============================================
+// ========================================
 
 async function loadDirectory(path = "") {
     currentPath = path;
 
-    fileList.innerHTML = `
-        <div class="loading">Loading...</div>
-    `;
+    fileList.innerHTML = "Loading...";
 
     try {
-        const endpoint = path
+        const url = path
             ? `${API}/api/list?path=${encodeURIComponent(path)}`
             : `${API}/api/list`;
 
-        const response = await fetch(endpoint);
+        const response = await fetch(url);
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
@@ -40,7 +42,7 @@ async function loadDirectory(path = "") {
         console.error(error);
 
         fileList.innerHTML = `
-            <div class="error">
+            <div style="padding:24px">
                 Failed to load archive.
             </div>
         `;
@@ -48,18 +50,13 @@ async function loadDirectory(path = "") {
 }
 
 
-// ============================================
+// ========================================
 // BREADCRUMB
-// ============================================
+// ========================================
 
 function renderBreadcrumb(path) {
-
     if (!path) {
-        breadcrumb.innerHTML = `
-            <span class="breadcrumb-current">
-                📁 /
-            </span>
-        `;
+        breadcrumb.innerHTML = "📁 /";
         return;
     }
 
@@ -67,7 +64,7 @@ function renderBreadcrumb(path) {
 
     let html = `
         <span
-            class="breadcrumb-link"
+            style="cursor:pointer"
             onclick="loadDirectory('')"
         >
             📁 /
@@ -77,18 +74,17 @@ function renderBreadcrumb(path) {
     let accumulated = "";
 
     for (const part of parts) {
-
         accumulated +=
             (accumulated ? "/" : "") + part;
 
-        const currentPath = accumulated;
+        const current = accumulated;
 
         html += `
-            <span class="breadcrumb-separator">/</span>
+            <span> / </span>
 
             <span
-                class="breadcrumb-link"
-                onclick="loadDirectory('${escapeHtmlAttribute(currentPath)}')"
+                style="cursor:pointer"
+                onclick="loadDirectory('${current}')"
             >
                 ${escapeHtml(part)}
             </span>
@@ -99,49 +95,31 @@ function renderBreadcrumb(path) {
 }
 
 
-// ============================================
+// ========================================
 // RENDER FILES
-// ============================================
+// ========================================
 
 function renderFiles(files) {
-
     if (!files.length) {
         fileList.innerHTML = `
-            <div class="empty">
+            <div style="padding:24px">
                 This directory is empty.
             </div>
         `;
+
         return;
     }
 
-    // Directories first, files second
-    files.sort((a, b) => {
-
-        if (a.type === "dir" && b.type !== "dir") {
-            return -1;
-        }
-
-        if (a.type !== "dir" && b.type === "dir") {
-            return 1;
-        }
-
-        return a.name.localeCompare(
-            b.name,
-            undefined,
-            { numeric: true }
-        );
-    });
-
     fileList.innerHTML = "";
 
-    for (const file of files) {
-
+    files.forEach(file => {
         const row = document.createElement("div");
 
-        row.className =
-            file.type === "dir"
-                ? "file-row directory"
-                : "file-row";
+        row.className = "file";
+
+        if (file.type === "dir") {
+            row.classList.add("directory");
+        }
 
         const icon =
             file.type === "dir"
@@ -149,44 +127,41 @@ function renderFiles(files) {
                 : getFileIcon(file.name);
 
         row.innerHTML = `
-            <div class="file-icon">
+            <span class="icon">
                 ${icon}
-            </div>
+            </span>
 
-            <div class="file-name">
+            <span class="name">
                 ${escapeHtml(file.name)}
-            </div>
+            </span>
 
-            <div class="file-size">
+            <span class="size">
                 ${
                     file.type === "file"
                         ? formatSize(file.size)
                         : ""
                 }
-            </div>
+            </span>
         `;
 
-        row.addEventListener("click", () => {
-
+        row.onclick = () => {
             if (file.type === "dir") {
                 loadDirectory(file.path);
             } else {
                 openFile(file.path);
             }
-
-        });
+        };
 
         fileList.appendChild(row);
-    }
+    });
 }
 
 
-// ============================================
-// OPEN / DOWNLOAD FILE
-// ============================================
+// ========================================
+// OPEN FILE
+// ========================================
 
 function openFile(path) {
-
     const url =
         `${API}/api/file?path=${encodeURIComponent(path)}`;
 
@@ -194,9 +169,9 @@ function openFile(path) {
 }
 
 
-// ============================================
+// ========================================
 // UPLOAD
-// ============================================
+// ========================================
 
 uploadButton.addEventListener("click", () => {
     fileInput.click();
@@ -214,7 +189,9 @@ fileInput.addEventListener("change", async () => {
     try {
 
         uploadButton.disabled = true;
-        uploadButton.textContent = "Uploading...";
+
+        uploadButton.textContent =
+            "Uploading...";
 
 
         // Read file
@@ -222,11 +199,11 @@ fileInput.addEventListener("change", async () => {
         const buffer =
             await file.arrayBuffer();
 
-        const bytes =
-            new Uint8Array(buffer);
-
 
         // Convert to Base64
+
+        const bytes =
+            new Uint8Array(buffer);
 
         let binary = "";
 
@@ -250,7 +227,7 @@ fileInput.addEventListener("change", async () => {
             btoa(binary);
 
 
-        // Create path
+        // Determine path
 
         const uploadPath =
             currentPath
@@ -292,9 +269,7 @@ fileInput.addEventListener("change", async () => {
         }
 
 
-        alert(
-            `Uploaded successfully:\n${uploadPath}`
-        );
+        alert("File uploaded successfully!");
 
 
         fileInput.value = "";
@@ -302,7 +277,9 @@ fileInput.addEventListener("change", async () => {
 
         // Refresh current directory
 
-        await loadDirectory(currentPath);
+        await loadDirectory(
+            currentPath
+        );
 
 
     } catch (error) {
@@ -310,20 +287,22 @@ fileInput.addEventListener("change", async () => {
         console.error(error);
 
         alert(
-            `Upload failed:\n${error.message}`
+            `Upload failed: ${error.message}`
         );
 
     } finally {
 
         uploadButton.disabled = false;
-        uploadButton.textContent = "+ Add File";
+
+        uploadButton.textContent =
+            "+ Add File";
     }
 });
 
 
-// ============================================
-// FILE ICONS
-// ============================================
+// ========================================
+// HELPERS
+// ========================================
 
 function getFileIcon(filename) {
 
@@ -334,17 +313,17 @@ function getFileIcon(filename) {
             .toLowerCase();
 
 
-    if (extension === "pdf") {
+    if (extension === "pdf")
         return "📕";
-    }
 
-    if (extension === "md") {
+
+    if (extension === "md")
         return "📝";
-    }
 
-    if (extension === "txt") {
+
+    if (extension === "txt")
         return "📄";
-    }
+
 
     if (
         [
@@ -352,36 +331,23 @@ function getFileIcon(filename) {
             "jpg",
             "jpeg",
             "gif",
-            "webp",
-            "svg"
+            "webp"
         ].includes(extension)
     ) {
         return "🖼️";
     }
 
-    if (
-        [
-            "zip",
-            "tar",
-            "gz"
-        ].includes(extension)
-    ) {
-        return "📦";
-    }
 
     return "📄";
 }
 
-
-// ============================================
-// FORMAT FILE SIZE
-// ============================================
 
 function formatSize(bytes) {
 
     if (!bytes) {
         return "0 B";
     }
+
 
     const units = [
         "B",
@@ -390,28 +356,30 @@ function formatSize(bytes) {
         "GB"
     ];
 
+
     const index =
         Math.floor(
             Math.log(bytes) /
             Math.log(1024)
         );
 
+
     return (
         (
             bytes /
-            Math.pow(1024, index)
+            Math.pow(
+                1024,
+                index
+            )
         ).toFixed(
             index === 0 ? 0 : 1
         )
-        + " "
-        + units[index]
+        +
+        " " +
+        units[index]
     );
 }
 
-
-// ============================================
-// HTML ESCAPING
-// ============================================
 
 function escapeHtml(value) {
 
@@ -424,16 +392,8 @@ function escapeHtml(value) {
 }
 
 
-function escapeHtmlAttribute(value) {
-
-    return value
-        .replaceAll("\\", "\\\\")
-        .replaceAll("'", "\\'");
-}
-
-
-// ============================================
-// START
-// ============================================
+// ========================================
+// INITIAL LOAD
+// ========================================
 
 loadDirectory();
