@@ -619,17 +619,17 @@ function getFileIcon(filename) {
 
 
     if (extension === "pdf") {
-        return "📚";
+        return "-";
     }
 
 
     if (extension === "md") {
-        return "📄";
+        return "-";
     }
 
 
     if (extension === "txt") {
-        return "📄";
+        return "-";
     }
 
 
@@ -643,7 +643,7 @@ function getFileIcon(filename) {
             "svg"
         ].includes(extension)
     ) {
-        return "📷";
+        return "-";
     }
 
 
@@ -654,11 +654,11 @@ function getFileIcon(filename) {
             "gz"
         ].includes(extension)
     ) {
-        return "📦";
+        return "-";
     }
 
 
-    return "📄";
+    return "-";
 }
 
 
