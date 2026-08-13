@@ -19,7 +19,7 @@ async function loadDirectory(path = "") {
     currentPath = path;
 
     fileList.innerHTML =
-        `<div class="loading">Loading...</div>`;
+        `<div class="loading">⏳</div>`;
 
     try {
 
@@ -355,7 +355,7 @@ fileInput.addEventListener(
             uploadButton.disabled = true;
 
             uploadButton.textContent =
-                "Uploading...";
+                "⏳...";
 
 
             const buffer =
@@ -499,7 +499,7 @@ newFolderButton.addEventListener(
         try {
 
             newFolderButton.disabled = true;
-            newFolderButton.textContent = "Creating...";
+            newFolderButton.textContent = "⏳...";
 
             const response = await fetch(
                 `${API}/api/folder`,
@@ -619,12 +619,12 @@ function getFileIcon(filename) {
 
 
     if (extension === "pdf") {
-        return "📕";
+        return "📚";
     }
 
 
     if (extension === "md") {
-        return "📝";
+        return "";
     }
 
 
@@ -643,7 +643,7 @@ function getFileIcon(filename) {
             "svg"
         ].includes(extension)
     ) {
-        return "🖼️";
+        return "📷";
     }
 
 
@@ -654,11 +654,11 @@ function getFileIcon(filename) {
             "gz"
         ].includes(extension)
     ) {
-        return "📦";
+        return "";
     }
 
 
-    return "📄";
+    return "";
 }
 
 

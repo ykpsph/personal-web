@@ -4,32 +4,19 @@
 
 body {
     margin: 0;
-
     background: #f5f5f5;
-
     color: #222;
-
-    /**font-family:
-        Arial,
-        Helvetica,
-        sans-serif;*/
+    font-family: monospace;
 }
 
 .container {
     width: min(1000px, calc(100% - 30px));
-
-    margin: 40px auto;
-
+    margin: 20px auto;
     background: white;
-
     border: 1px solid #d9d9d9;
-
-    border-radius: 6px;
-
+    border-radius: 5px;
     overflow: hidden;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 
@@ -39,38 +26,26 @@ body {
 
 header {
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
-    padding: 18px 24px;
-
+    padding: 10px 16px;
     border-bottom: 1px solid #ddd;
 }
 
 h1 {
     margin: 0;
-
-    font-size: 22px;
-
+    font-size: 19px;
     font-weight: 600;
 }
 
 button {
     border: 1px solid #ccc;
-
     background: white;
-
     color: #222;
-
-    padding: 8px 14px;
-
-    border-radius: 5px;
-
+    padding: 5px 10px;
+    border-radius: 4px;
     cursor: pointer;
-
-    font-size: 14px;
+    font-size: 13px;
 }
 
 button:hover {
@@ -79,7 +54,6 @@ button:hover {
 
 button:disabled {
     cursor: wait;
-
     opacity: 0.6;
 }
 
@@ -89,30 +63,24 @@ button:disabled {
    ========================================== */
 
 #breadcrumb {
-    padding: 12px 24px;
-
+    padding: 7px 16px;
     border-bottom: 1px solid #eee;
-
     color: #666;
-
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .breadcrumb-link {
     cursor: pointer;
-
     color: #555;
 }
 
 .breadcrumb-link:hover {
     text-decoration: underline;
-
     color: #111;
 }
 
 .breadcrumb-separator {
-    margin: 0 5px;
-
+    margin: 0 4px;
     color: #aaa;
 }
 
@@ -122,20 +90,15 @@ button:disabled {
    ========================================== */
 
 #fileList {
-    padding: 4px 0;
+    padding: 0;
 }
 
 .file-row {
     display: flex;
-
     align-items: center;
-
-    min-height: 46px;
-
-    padding: 8px 24px;
-
+    min-height: 32px;
+    padding: 4px 16px;
     border-bottom: 1px solid #eee;
-
     cursor: pointer;
 }
 
@@ -148,22 +111,15 @@ button:disabled {
 }
 
 .delete-button {
-    width: 34px;
-
-    padding: 5px;
-
+    width: 28px;
+    padding: 3px;
     border: none;
-
     background: transparent;
-
     color: #888;
-
     opacity: 0;
-
     transition:
         opacity 0.15s,
         background 0.15s;
-
     cursor: pointer;
 }
 
@@ -173,38 +129,29 @@ button:disabled {
 
 .delete-button:hover {
     background: #f0f0f0;
-
     color: #c00;
 }
 
 .file-icon {
-    width: 34px;
-
+    width: 30px;
     flex-shrink: 0;
-
-    font-size: 18px;
+    font-size: 13px;
 }
 
 .file-name {
     flex: 1;
-
     min-width: 0;
-
     overflow: hidden;
-
     text-overflow: ellipsis;
-
     white-space: nowrap;
+    font-size: 13px;
 }
 
 .file-size {
-    width: 90px;
-
+    width: 80px;
     text-align: right;
-
     color: #888;
-
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .directory .file-name {
@@ -219,8 +166,7 @@ button:disabled {
 .loading,
 .empty,
 .error {
-    padding: 30px 24px;
-
+    padding: 20px 16px;
     color: #777;
 }
 
@@ -237,29 +183,26 @@ button:disabled {
 
     .container {
         width: 100%;
-
         margin: 0;
-
         border: none;
-
         border-radius: 0;
-
         box-shadow: none;
     }
 
     header {
-        padding: 16px;
+        padding: 9px 12px;
     }
 
     #breadcrumb {
-        padding: 10px 16px;
+        padding: 7px 12px;
     }
 
     .file-row {
-        padding: 8px 16px;
+        padding: 4px 12px;
+        min-height: 31px;
     }
 
     .file-size {
-        width: 65px;
+        width: 60px;
     }
 }
