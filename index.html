@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Archive</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <div>
+            <h1>My Archive</h1>
+            <div id="breadcrumb" class="breadcrumb">
+                /
+            </div>
+        </div>
+
+        <button id="addFileButton" class="add-button">
+            + Add File
+        </button>
+    </header>
+
+    <main>
+
+        <div id="loading" class="loading">
+            Loading...
+        </div>
+
+        <div id="fileList" class="file-list"></div>
+
+        <div id="error" class="error hidden"></div>
+
+    </main>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
