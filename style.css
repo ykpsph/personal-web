@@ -4,80 +4,232 @@
 
 body {
     margin: 0;
+
     background: #f5f5f5;
+
     color: #222;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 .container {
-    max-width: 1000px;
+    width: min(1000px, calc(100% - 30px));
+
     margin: 40px auto;
+
     background: white;
-    border: 1px solid #ddd;
+
+    border: 1px solid #d9d9d9;
+
+    border-radius: 6px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.04);
 }
+
+
+/* ==========================================
+   HEADER
+   ========================================== */
 
 header {
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
+
     padding: 18px 24px;
+
     border-bottom: 1px solid #ddd;
 }
 
 h1 {
     margin: 0;
+
     font-size: 22px;
+
+    font-weight: 600;
 }
 
 button {
     border: 1px solid #ccc;
+
     background: white;
+
+    color: #222;
+
     padding: 8px 14px;
+
     border-radius: 5px;
+
     cursor: pointer;
-}
 
-button:hover {
-    background: #f0f0f0;
-}
-
-#breadcrumb {
-    padding: 12px 24px;
-    border-bottom: 1px solid #eee;
-    color: #666;
     font-size: 14px;
 }
 
-#fileList {
-    padding: 10px 0;
+button:hover {
+    background: #f1f1f1;
 }
 
-.file {
-    display: flex;
-    align-items: center;
-    padding: 10px 24px;
+button:disabled {
+    cursor: wait;
+
+    opacity: 0.6;
+}
+
+
+/* ==========================================
+   BREADCRUMB
+   ========================================== */
+
+#breadcrumb {
+    padding: 12px 24px;
+
     border-bottom: 1px solid #eee;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+.breadcrumb-link {
+    cursor: pointer;
+
+    color: #555;
+}
+
+.breadcrumb-link:hover {
+    text-decoration: underline;
+
+    color: #111;
+}
+
+.breadcrumb-separator {
+    margin: 0 5px;
+
+    color: #aaa;
+}
+
+
+/* ==========================================
+   FILE LIST
+   ========================================== */
+
+#fileList {
+    padding: 4px 0;
+}
+
+.file-row {
+    display: flex;
+
+    align-items: center;
+
+    min-height: 46px;
+
+    padding: 8px 24px;
+
+    border-bottom: 1px solid #eee;
+
     cursor: pointer;
 }
 
-.file:hover {
+.file-row:hover {
     background: #f7f7f7;
 }
 
-.icon {
-    width: 32px;
+.file-row:last-child {
+    border-bottom: none;
+}
+
+.file-icon {
+    width: 34px;
+
+    flex-shrink: 0;
+
     font-size: 18px;
 }
 
-.name {
+.file-name {
     flex: 1;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
 }
 
-.size {
+.file-size {
+    width: 90px;
+
+    text-align: right;
+
     color: #888;
+
     font-size: 13px;
 }
 
-.directory {
+.directory .file-name {
     font-weight: 500;
+}
+
+
+/* ==========================================
+   STATES
+   ========================================== */
+
+.loading,
+.empty,
+.error {
+    padding: 30px 24px;
+
+    color: #777;
+}
+
+.error {
+    color: #b00020;
+}
+
+
+/* ==========================================
+   MOBILE
+   ========================================== */
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 100%;
+
+        margin: 0;
+
+        border: none;
+
+        border-radius: 0;
+
+        box-shadow: none;
+    }
+
+    header {
+        padding: 16px;
+    }
+
+    #breadcrumb {
+        padding: 10px 16px;
+    }
+
+    .file-row {
+        padding: 8px 16px;
+    }
+
+    .file-size {
+        width: 65px;
+    }
 }
