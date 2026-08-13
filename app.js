@@ -433,7 +433,7 @@ function escapeHtmlAttribute(value) {
 
 
 // ============================================
-// START something
+// START
 // ============================================
 
 loadDirectory();
