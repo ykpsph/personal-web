@@ -5,6 +5,7 @@ const fileList = document.getElementById("fileList");
 const breadcrumb = document.getElementById("breadcrumb");
 const uploadButton = document.getElementById("uploadButton");
 const fileInput = document.getElementById("fileInput");
+const newFolderButton = document.getElementById("newFolderButton");
 
 let currentPath = "";
 
@@ -193,8 +194,13 @@ function renderFiles(files) {
 
     for (const file of files) {
 
-        const row =
-            document.createElement("div");
+    // Hide Git's placeholder file used to represent empty folders.
+    if (file.name === ".gitkeep") {
+        continue;
+    }
+
+    const row =
+        document.createElement("div");
 
 
         row.className =
@@ -272,7 +278,7 @@ function renderFiles(files) {
             }
         );
 
-
+        
         // Delete button
 
         const deleteButton =
@@ -455,7 +461,87 @@ fileInput.addEventListener(
     }
 );
 
+// ============================================
+// NEW FOLDER
+// ============================================
 
+newFolderButton.addEventListener(
+    "click",
+    async () => {
+
+        const name = prompt("Folder name:");
+
+        if (!name) {
+            return;
+        }
+
+        const folderName = name.trim();
+
+        if (!folderName) {
+            return;
+        }
+
+        // Prevent accidental path traversal / nested paths.
+        if (
+            folderName.includes("/") ||
+            folderName.includes("\\") ||
+            folderName === "." ||
+            folderName === ".."
+        ) {
+            alert("Please enter a simple folder name.");
+            return;
+        }
+
+        const folderPath = currentPath
+            ? `${currentPath}/${folderName}`
+            : folderName;
+
+        try {
+
+            newFolderButton.disabled = true;
+            newFolderButton.textContent = "Creating...";
+
+            const response = await fetch(
+                `${API}/api/folder`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        path: folderPath
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error ||
+                    `HTTP ${response.status}`
+                );
+            }
+
+            await loadDirectory(currentPath);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                `Folder creation failed:\n${error.message}`
+            );
+
+        } finally {
+
+            newFolderButton.disabled = false;
+            newFolderButton.textContent = "+ New Folder";
+        }
+    }
+);
 // ============================================
 // DELETE
 // ============================================
