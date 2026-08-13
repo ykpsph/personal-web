@@ -1,161 +1,197 @@
-const archive = [
-    {
-        type: "directory",
-        name: "AWS"
-    },
-    {
-        type: "directory",
-        name: "Kubernetes"
-    },
-    {
-        type: "directory",
-        name: "DevOps"
-    },
-    {
-        type: "directory",
-        name: "Books"
-    },
-    {
-        type: "file",
-        name: "DockerCheatSheet.md",
-        size: 10240,
-        modified: "2026-08-13"
-    },
-    {
-        type: "file",
-        name: "VPC.pdf",
-        size: 2097152,
-        modified: "2026-08-13"
-    },
-    {
-        type: "file",
-        name: "architecture.png",
-        size: 819200,
-        modified: "2026-08-13"
-    }
-];
+const API = "https://personal-arkhayv-api.personal-arkhayv-api.workers.dev";
 
+let currentPath = "";
 
 const fileList = document.getElementById("fileList");
-const loading = document.getElementById("loading");
-const error = document.getElementById("error");
 const breadcrumb = document.getElementById("breadcrumb");
-const addFileButton = document.getElementById("addFileButton");
+const uploadButton = document.getElementById("uploadButton");
+const fileInput = document.getElementById("fileInput");
 
+async function loadDirectory(path = "") {
+    currentPath = path;
 
-function formatSize(bytes) {
+    fileList.innerHTML = "Loading...";
 
-    if (bytes < 1024) {
-        return `${bytes} B`;
-    }
+    try {
+        const url = path
+            ? `${API}/api/list?path=${encodeURIComponent(path)}`
+            : `${API}/api/list`;
 
-    if (bytes < 1024 * 1024) {
-        return `${(bytes / 1024).toFixed(1)} KB`;
-    }
+        const response = await fetch(url);
 
-    if (bytes < 1024 * 1024 * 1024) {
-        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
 
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-}
+        const files = await response.json();
 
+        renderBreadcrumb(path);
+        renderFiles(files);
 
-function getIcon(item) {
+    } catch (error) {
+        console.error(error);
 
-    if (item.type === "directory") {
-        return "📁";
-    }
-
-    const extension = item.name
-        .split(".")
-        .pop()
-        .toLowerCase();
-
-    switch (extension) {
-
-        case "pdf":
-            return "📕";
-
-        case "md":
-            return "📝";
-
-        case "txt":
-            return "📄";
-
-        case "png":
-        case "jpg":
-        case "jpeg":
-        case "webp":
-            return "🖼️";
-
-        default:
-            return "📄";
+        fileList.innerHTML = `
+            <div style="padding:24px">
+                Failed to load archive.
+            </div>
+        `;
     }
 }
 
+function renderBreadcrumb(path) {
+    if (!path) {
+        breadcrumb.innerHTML = "📁 /";
+        return;
+    }
+
+    const parts = path.split("/");
+
+    let html = `
+        <span style="cursor:pointer" onclick="loadDirectory('')">
+            📁 /
+        </span>
+    `;
+
+    let accumulated = "";
+
+    for (const part of parts) {
+        accumulated += (accumulated ? "/" : "") + part;
+
+        const current = accumulated;
+
+        html += `
+            <span> / </span>
+            <span
+                style="cursor:pointer"
+                onclick="loadDirectory('${current}')"
+            >
+                ${part}
+            </span>
+        `;
+    }
+
+    breadcrumb.innerHTML = html;
+}
 
 function renderFiles(files) {
-
-    loading.classList.add("hidden");
+    if (!files.length) {
+        fileList.innerHTML = `
+            <div style="padding:24px">
+                This directory is empty.
+            </div>
+        `;
+        return;
+    }
 
     fileList.innerHTML = "";
 
-    files.forEach(item => {
+    files.forEach(file => {
+        const row = document.createElement("div");
 
-        const row = document.createElement("a");
+        row.className = "file";
 
-        row.className = "file-row";
-
-        if (item.type === "directory") {
-
-            row.href = "#";
-
-            row.addEventListener("click", event => {
-                event.preventDefault();
-
-                alert(`Opening ${item.name}/`);
-            });
-
-        } else {
-
-            row.href = "#";
-
-            row.addEventListener("click", event => {
-                event.preventDefault();
-
-                alert(`Opening ${item.name}`);
-            });
+        if (file.type === "dir") {
+            row.classList.add("directory");
         }
 
+        const icon = file.type === "dir"
+            ? "📁"
+            : getFileIcon(file.name);
+
         row.innerHTML = `
-            <span class="file-icon">
-                ${getIcon(item)}
-            </span>
-
-            <span class="file-name">
-                ${item.name}${item.type === "directory" ? "/" : ""}
-            </span>
-
-            <span class="file-size">
-                ${item.type === "directory" ? "-" : formatSize(item.size)}
-            </span>
-
-            <span class="file-date">
-                ${item.modified ?? ""}
+            <span class="icon">${icon}</span>
+            <span class="name">${escapeHtml(file.name)}</span>
+            <span class="size">
+                ${file.type === "file" ? formatSize(file.size) : ""}
             </span>
         `;
+
+        row.onclick = () => {
+            if (file.type === "dir") {
+                loadDirectory(file.path);
+            } else {
+                openFile(file.path);
+            }
+        };
 
         fileList.appendChild(row);
     });
 }
 
+function openFile(path) {
+    const url =
+        `${API}/api/file?path=${encodeURIComponent(path)}`;
 
-addFileButton.addEventListener("click", () => {
+    window.open(url, "_blank");
+}
 
-    alert("File upload will be implemented through the GitHub API.");
+function getFileIcon(filename) {
+    const extension =
+        filename.split(".").pop().toLowerCase();
 
+    if (extension === "pdf") return "📕";
+    if (extension === "md") return "📝";
+    if (extension === "txt") return "📄";
+
+    if (
+        ["png", "jpg", "jpeg", "gif", "webp"].includes(extension)
+    ) {
+        return "🖼️";
+    }
+
+    return "📄";
+}
+
+function formatSize(bytes) {
+    if (!bytes) return "0 B";
+
+    const units = ["B", "KB", "MB", "GB"];
+
+    const index = Math.floor(
+        Math.log(bytes) / Math.log(1024)
+    );
+
+    return (
+        (bytes / Math.pow(1024, index)).toFixed(
+            index === 0 ? 0 : 1
+        ) +
+        " " +
+        units[index]
+    );
+}
+
+function escapeHtml(value) {
+    return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+// --------------------
+// Upload
+// --------------------
+
+uploadButton.addEventListener("click", () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+
+    if (!file) return;
+
+    alert(
+        "Upload endpoint is next. The file was selected successfully: " +
+        file.name
+    );
+
+    fileInput.value = "";
 });
 
 
-renderFiles(archive);
+// Initial load
+loadDirectory();
